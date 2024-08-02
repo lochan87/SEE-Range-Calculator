@@ -1,61 +1,4 @@
-if ('serviceWorker' in navigator) {
-    const blob = new Blob([`
-       // Service Worker Script
-
-        const CACHE_NAME = 'my-cache-v1';
-        const urlsToCache = [
-            'https://i.ibb.co/gb0GBZr/Designer.jpg',
-            // Add other images or assets you want to cache
-        ];
-
-        // Install event
-        self.addEventListener('install', event => {
-            event.waitUntil(
-                caches.open(CACHE_NAME)
-                    .then(cache => {
-                        return cache.addAll(urlsToCache);
-                    })
-            );
-        });
-
-        // Activate event
-        self.addEventListener('activate', event => {
-            event.waitUntil(
-                caches.keys().then(cacheNames => {
-                    return Promise.all(
-                        cacheNames.map(cacheName => {
-                            if (cacheName !== CACHE_NAME) {
-                                return caches.delete(cacheName);
-                            }
-                        })
-                    );
-                })
-            );
-        });
-
-        // Fetch event
-        self.addEventListener('fetch', event => {
-            event.respondWith(
-                caches.match(event.request).then(response => {
-                    return response || fetch(event.request).then(fetchResponse => {
-                        return caches.open(CACHE_NAME).then(cache => {
-                            cache.put(event.request, fetchResponse.clone());
-                            return fetchResponse;
-                        });
-                    });
-                })
-            );
-        });
-    `], { type: 'application/javascript' });
-
-    const blobURL = URL.createObjectURL(blob);
-
-    navigator.serviceWorker.register(blobURL).then(registration => {
-        console.log('ServiceWorker registration successful with scope: ', registration.scope);
-    }).catch(error => {
-        console.log('ServiceWorker registration failed: ', error);
-    });
-}
+// Function to get range for single subject
 function getrange1()
 {
     var aim = document.getElementById("inputGroupSelect01").value;
@@ -176,7 +119,14 @@ function getrange1()
         }
     }
 }
-// Function to load rows dynamically based on number of subjects
+// Function to clean the input fields
+function cleansingle()
+{
+    document.getElementById("subject").value = "";
+    document.getElementById("inputGroupSelect01").value = "0";
+    document.getElementById("result").style.display = "none";
+}
+// Function to add rows dynamically based on number of subjects
 function loadmodal()
 {
     var subs = document.getElementById("subs").value;
@@ -199,6 +149,9 @@ function loadmodal()
     });
     modal.show();
     var loadsubs = document.getElementById("loadsubs");
+    var p = document.createElement("p");
+    p.innerHTML = "Enter the Overall CIE marks and desired GPA for each subject:";
+    loadsubs.appendChild(p);
     for(var i=1;i<=subs;i++)
     {
         var sub = document.createElement("div");
@@ -230,6 +183,19 @@ function loadmodal()
         res.innerHTML = "<input type='text' class='form-control' disabled>";
         res.id = "res"+i;
         row.appendChild(res);
+    }
+}
+// Function to clean the input fields
+function cleansub()
+{
+    document.getElementById("subs").value = "";
+    var loadsubs = document.getElementById("loadsubs");
+    while (loadsubs.firstChild) {
+        loadsubs.removeChild(loadsubs.firstChild);
+    }
+    var nummodal = bootstrap.Modal.getInstance(document.getElementById('multiplesub'));
+    if(nummodal){
+        nummodal.hide();
     }
 }
 // Function to get range for multiple subjects
@@ -387,5 +353,17 @@ function getrange2()
                 res.disabled = true;
             }
         }
+    }
+}
+// Function to just clean the rows
+function cleanrows()
+{
+    var loadsubs = document.getElementById("loadsubs");
+    while (loadsubs.firstChild) {
+        loadsubs.removeChild(loadsubs.firstChild);
+    }
+    var nummodal = bootstrap.Modal.getInstance(document.getElementById('multiplesub'));
+    if(nummodal){
+        nummodal.hide();
     }
 }
